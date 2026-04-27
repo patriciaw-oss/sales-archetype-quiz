@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OGSC Weekly Challenge #4: The Sales Archetype Discovery!</title>
+  <title>Week #4: OGSC Character Discovery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -531,14 +531,22 @@
   <!--
     SEISMIC & TRACKING
     - Identity: add ?email=&userId=&name= to the hosted URL, or set window.SALES_ARCHETYPE_CONTEXT = { email, userId, name } in a script that runs before this page (Seismic "header" / wrapper HTML).
-    - If the quiz is embedded in an iframe and no email is provided, a work-email field appears on the start screen; entry is kept in sessionStorage for the session.
+    - If no email is known yet, a work-email field appears on the start screen (GitHub Pages, Seismic iframe, or local); entry is kept in sessionStorage. Opt out: ?hideEmail=1 or window.SALES_ARCHETYPE_CONFIG = { hideEmailField: true }.
     - On completion, a JSON payload is sent to parent via postMessage { type: "ogsc-sales-archetype-result", version: 1, payload } and dispatchEvent("ogscSalesArchetypeResult"). Payload always includes typeCode, archetype, email (if known), and sessionId.
-    - Server log: set window.SALES_ARCHETYPE_CONFIG = { logEndpoint: "https://your-server/...", postMessageTargetOrigin: "https://yourseismicdomain.com", requireEmail: false, showEmailField: true, hideEmailField: false }; logEndpoint receives POST application/json (sendBeacon and/or fetch keepalive) with the same payload for a spreadsheet, DB, or webhook. Use requireEmail: true in Seismic to block "Start" until a valid work email is entered.
+    - Google Sheet: deploy google-apps-script/SheetLogger.gs, paste the Web app /exec URL into the script block below (logEndpoint). Optional logSecret must match the script. Logging uses POST (text body + no-cors) for compatibility with Google Apps Script.
+    - Also: postMessage / Seismic, requireEmail, etc. as before.
     - Parent page listener: window.addEventListener("message", (e) => { if (e.data?.type === "ogsc-sales-archetype-result" && e.data.version === 1) { /* e.data.payload.email, .typeCode */ } });
   -->
+  <script>
+    /* 1) In your Google Sheet: Extensions → Apps Script, paste in SheetLogger.gs, Deploy → New deployment → Web app: Execute as you, access: Anyone, copy the URL. 2) Paste that URL as logEndpoint. 3) Optional: set a secret in the script and in logSecret. */
+    window.SALES_ARCHETYPE_CONFIG = {
+      logEndpoint: "",
+      logSecret: ""
+    };
+  </script>
   <div id="app">
     <div id="screen-start" class="screen active">
-      <h1>OGSC Weekly Challenge #4: The Sales Archetype Discovery!</h1>
+      <h1>Week #4: OGSC Character Discovery</h1>
       <p class="lead">
         Do you feel like a high-velocity engine being asked to maintain a walking pace? Or are you the structural anchor
         keeping a complex project from drifting off course?
@@ -644,14 +652,6 @@
         return c != null && typeof c === "object" ? c : {};
       }
 
-      function isEmbedded() {
-        try {
-          return window.self !== window.top;
-        } catch (e) {
-          return true;
-        }
-      }
-
       function getIntegrationContext() {
         var q = new URLSearchParams(window.location.search);
         var sessionEmail = null;
@@ -709,10 +709,11 @@
           return false;
         }
         var q = new URLSearchParams(window.location.search);
-        if (q.get("collectEmail") === "1" || q.get("seismic") === "1") {
-          return true;
+        if (q.get("hideEmail") === "1" || q.get("noEmail") === "1") {
+          return false;
         }
-        return isEmbedded();
+        /* Default: show work-email whenever we don't already have an email (full tab, iframe, or GitHub Pages). */
+        return true;
       }
 
       function persistEmailFromField() {
@@ -798,29 +799,33 @@
             /* ignore */
           }
         }
-        var logUrl = typeof cfg.logEndpoint === "string" && cfg.logEndpoint;
+        var logUrl = typeof cfg.logEndpoint === "string" && cfg.logEndpoint.trim();
         if (logUrl) {
-          var body = JSON.stringify(payload);
-          var sent = false;
-          if (typeof navigator.sendBeacon === "function") {
-            try {
-              var blob = new Blob([body], { type: "application/json" });
-              sent = navigator.sendBeacon(logUrl, blob);
-            } catch (e5) {
-              sent = false;
-            }
+          var toSend = payload;
+          if (cfg.logSecret) {
+            toSend = JSON.parse(JSON.stringify(payload));
+            toSend._logSecret = cfg.logSecret;
           }
-          if (!sent && typeof fetch === "function") {
+          var body = JSON.stringify(toSend);
+          if (typeof fetch === "function") {
             try {
               fetch(logUrl, {
                 method: "POST",
                 body: body,
-                headers: { "Content-Type": "application/json" },
-                mode: "cors",
+                mode: "no-cors",
                 keepalive: true
               }).catch(function () {
                 /* ignore */
               });
+            } catch (e5) {
+              /* ignore */
+            }
+          } else if (typeof navigator.sendBeacon === "function") {
+            try {
+              navigator.sendBeacon(
+                logUrl,
+                new Blob([body], { type: "text/plain;charset=utf-8" })
+              );
             } catch (e6) {
               /* ignore */
             }
@@ -1204,7 +1209,7 @@
           event: "ogsc_weekly_4_sales_archetype",
           sessionId: getOrCreateSessionId(),
           completedAt: new Date().toISOString(),
-          challenge: "OGSC Weekly Challenge #4: The Sales Archetype Discovery",
+          challenge: "Week #4: OGSC Character Discovery",
           typeCode: code,
           archetype: info.name || null,
           email: integ.email || null,
