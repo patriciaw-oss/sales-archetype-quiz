@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OGSC Weekly Challenge #4: The Sales Archetype Discovery!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --page-bg: #e8f4ec;
+      --page-tint: #d8ebe2;
+      --bg-card: #ffffff;
+      --bg-elevated: #f0f7f2;
+      --text: #1a2e24;
+      --text-muted: #4d6358;
+      --accent: #2a6b45;
+      --accent-hover: #1f4d33;
+      --border: #b8d9c6;
+      --success: #1b5e3a;
+      --mint: #d4edde;
+      --mint-strong: #b8dfc8;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(34, 86, 58, 0.08);
+      --font: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--page-bg);
+      background-image: linear-gradient(180deg, #f2faf5 0%, var(--page-tint) 50%, #dff0e6 100%);
+    }
+
+    #app {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+
+    p.lead {
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0 0 1.5rem;
+      font-size: 1rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.9rem 1.1rem;
+      margin-top: 0.65rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.4;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background: var(--mint);
+      border-color: var(--accent);
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2a6b45 0%, #3d8a5c 100%);
+      border: none;
+      color: #fff;
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-hover) 0%, #2a6b45 100%);
+      border: none;
+    }
+
+    .field-track-email {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .field-track-email label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .field-track-email input[type="email"] {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .field-track-email input[type="email"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(42, 107, 69, 0.2);
+    }
+
+    .field-error {
+      font-size: 0.8rem;
+      color: #b71c1c;
+      margin: 0.35rem 0 0;
+    }
+
+    .progress-wrap {
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--mint);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2a6b45, #5cb88a);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .q-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.45;
+      margin: 0 0 1rem;
+    }
+
+    .opt-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .result-body {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .result-body strong {
+      color: var(--text);
+    }
+
+    .axes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+    }
+
+    .axis {
+      background: var(--bg-elevated);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .axis span.winner {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .axis-count {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    .model-key {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0 0 1.25rem;
+      padding: 0.9rem 1rem;
+      background: var(--mint);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .model-key strong {
+      color: var(--text);
+    }
+
+    .result-hero {
+      text-align: center;
+      max-width: 36rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+      font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
+    }
+
+    .result-kicker {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin: 0 0 0.75rem;
+    }
+
+    .result-title-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.35rem 0.6rem;
+      margin: 0 0 1.5rem;
+    }
+
+    .result-archetype-title {
+      font-size: clamp(1.5rem, 5vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #0d0d0d;
+      margin: 0;
+    }
+
+    .result-type-paren {
+      font-size: clamp(1.5rem, 5vw, 1.9rem);
+      font-weight: 800;
+      color: #8a9096;
+      margin: 0;
+    }
+
+    .result-mascot {
+      display: flex;
+      justify-content: center;
+      margin: 0 0 1.25rem;
+    }
+
+    .result-mascot-circle {
+      width: 14rem;
+      height: 14rem;
+      max-width: 80vw;
+      max-height: 80vw;
+      border-radius: 50%;
+      background: var(--mint);
+      border: 3px solid #fff;
+      box-shadow: 0 6px 20px rgba(34, 86, 58, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .result-mascot-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+
+    .mascot-fallback {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #5c6b7a;
+      user-select: none;
+    }
+
+    .result-tagline {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.45;
+      margin: 0 0 0.65rem;
+      max-width: 32rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .result-spirit {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #4a4f55;
+      margin: 0 0 1.5rem;
+    }
+
+    .result-mint-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 0 0 1.5rem;
+      text-align: left;
+    }
+
+    @media (max-width: 520px) {
+      .result-mint-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 521px) and (max-width: 680px) {
+      .result-mint-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .mint-card {
+      background: var(--mint);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 1rem 1.05rem 1.1rem;
+      min-height: 5.5rem;
+    }
+
+    .mint-card--peak {
+      background: #ffffff;
+      border: 1px solid var(--border);
+    }
+
+    .mint-card__label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin: 0 0 0.45rem;
+    }
+
+    .mint-card__value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .peak-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .peak-day-scale {
+      position: relative;
+      flex: 1;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .peak-day-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #dbece2 0%, #e8f4ec 50%, #dbe8f4 100%);
+    }
+
+    .peak-day-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-radius: 5px;
+      min-width: 4px;
+      background: linear-gradient(90deg, #2a6b45, #5cb88a 75%, #ffe082);
+      box-shadow: 0 0 0 1px rgba(34, 86, 58, 0.12);
+    }
+
+    .peak-emoji {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .result-scores-wrap {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      margin-top: 0.25rem;
+    }
+
+    .result-scores-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin: 0 0 0.75rem;
+      text-align: center;
+    }
+
+    .axes--light {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    @media (min-width: 480px) {
+      .axes--light {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .axis--light {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .axis--light span.winner {
+      color: var(--accent);
+    }
+
+    .axis--light .axis-count {
+      color: var(--text-muted);
+    }
+
+    .result-cta {
+      display: block;
+      width: 100%;
+      margin-top: 1.25rem;
+      padding: 0.9rem 1.25rem;
+      font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #2a6b45 0%, #3d8a5c 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(42, 107, 69, 0.25);
+    }
+
+    .result-cta:hover {
+      background: linear-gradient(135deg, var(--accent-hover) 0%, #2a6b45 100%);
+    }
+
+    .result-body--light {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: center;
+      max-width: 32rem;
+      margin: 0 auto 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    SEISMIC & TRACKING
+    - Identity: add ?email=&userId=&name= to the hosted URL, or set window.SALES_ARCHETYPE_CONTEXT = { email, userId, name } in a script that runs before this page (Seismic "header" / wrapper HTML).
+    - If the quiz is embedded in an iframe and no email is provided, a work-email field appears on the start screen; entry is kept in sessionStorage for the session.
+    - On completion, a JSON payload is sent to parent via postMessage { type: "ogsc-sales-archetype-result", version: 1, payload } and dispatchEvent("ogscSalesArchetypeResult"). Payload always includes typeCode, archetype, email (if known), and sessionId.
+    - Server log: set window.SALES_ARCHETYPE_CONFIG = { logEndpoint: "https://your-server/...", postMessageTargetOrigin: "https://yourseismicdomain.com", requireEmail: false, showEmailField: true, hideEmailField: false }; logEndpoint receives POST application/json (sendBeacon and/or fetch keepalive) with the same payload for a spreadsheet, DB, or webhook. Use requireEmail: true in Seismic to block "Start" until a valid work email is entered.
+    - Parent page listener: window.addEventListener("message", (e) => { if (e.data?.type === "ogsc-sales-archetype-result" && e.data.version === 1) { /* e.data.payload.email, .typeCode */ } });
+  -->
+  <div id="app">
+    <div id="screen-start" class="screen active">
+      <h1>OGSC Weekly Challenge #4: The Sales Archetype Discovery!</h1>
+      <p class="lead">
+        Do you feel like a high-velocity engine being asked to maintain a walking pace? Or are you the structural anchor
+        keeping a complex project from drifting off course?
+      </p>
+      <p class="lead" style="margin-top: 0.75rem">
+        Answer 24 rapid-fire questions to reveal your Sales Archetype!
+      </p>
+      <p class="model-key">
+        <strong>H/F</strong> — Hunter vs Farmer<br />
+        <strong>S/M</strong> — Sprinter vs Marathoner<br />
+        <strong>D/R</strong> — Data vs Relational<br />
+        <strong>L/P</strong> — Lone Wolf vs Process
+      </p>
+      <div class="card">
+        <div class="field-track-email" id="field-email-wrap" hidden>
+          <label for="field-email">Work email</label>
+          <input
+            type="email"
+            id="field-email"
+            name="email"
+            autocomplete="email"
+            placeholder="name@company.com"
+            inputmode="email"
+          />
+          <p class="field-error" id="field-email-error" hidden>Enter a valid email to continue, or add ?email= to the link.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-start">Start the quiz</button>
+      </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+      <h1>Question</h1>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Progress</span>
+          <span id="progress-count">1 / 24</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div class="card">
+        <p class="q-text" id="question-text"></p>
+        <div class="opt-label">Option A</div>
+        <button type="button" class="btn" id="opt-a" data-option="a"></button>
+        <div class="opt-label" style="margin-top: 0.75rem">Option B</div>
+        <button type="button" class="btn" id="opt-b" data-option="b"></button>
+      </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+      <div class="result-hero">
+        <p class="result-kicker">Your Sales Personality Type is:</p>
+        <div class="result-title-line">
+          <p class="result-archetype-title" id="result-archetype-title">THE MAVERICK</p>
+          <p class="result-type-paren" id="result-type-paren">(HSDL)</p>
+        </div>
+        <div class="result-mascot">
+          <div class="result-mascot-circle" id="result-mascot-circle">
+            <img id="result-mascot-img" class="result-mascot-img" src="" alt="" hidden />
+            <div class="mascot-fallback" id="result-mascot-fallback" hidden aria-hidden="true">?</div>
+          </div>
+        </div>
+        <p class="result-tagline" id="result-core-vibe"></p>
+        <p class="result-spirit" id="result-spirit"></p>
+        <div class="result-mint-grid" id="result-mint-grid"></div>
+        <p class="result-body--light" id="result-fallback" hidden></p>
+        <div class="result-scores-wrap">
+          <p class="result-scores-title">How you scored</p>
+          <div class="axes axes--light" id="result-axes"></div>
+        </div>
+        <button type="button" class="result-cta" id="btn-again">Play again</button>
+      </div>
+    </div>
+
+    <footer>Model labels are for coaching and conversation — not a certified assessment.</footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var SESSION_EMAIL_KEY = "ogscSalesArchetypeUserEmail";
+
+      function getOrCreateSessionId() {
+        try {
+          var k = "ogscSalesArchetypeSessionId";
+          var s = window.sessionStorage && window.sessionStorage.getItem(k);
+          if (!s) {
+            s = "s_" + String(Date.now()) + "_" + String(Math.random()).slice(2, 10);
+            if (window.sessionStorage) {
+              window.sessionStorage.setItem(k, s);
+            }
+          }
+          return s;
+        } catch (e) {
+          return "s_unknown";
+        }
+      }
+
+      function getArchetypeConfig() {
+        var c = window.SALES_ARCHETYPE_CONFIG;
+        return c != null && typeof c === "object" ? c : {};
+      }
+
+      function isEmbedded() {
+        try {
+          return window.self !== window.top;
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function getIntegrationContext() {
+        var q = new URLSearchParams(window.location.search);
+        var sessionEmail = null;
+        try {
+          if (window.sessionStorage) {
+            sessionEmail = window.sessionStorage.getItem(SESSION_EMAIL_KEY);
+            if (sessionEmail) {
+              sessionEmail = String(sessionEmail).trim() || null;
+            }
+          }
+        } catch (e1) {
+          sessionEmail = null;
+        }
+        var ctx = {
+          userId: q.get("userId") || q.get("uid") || q.get("user") || null,
+          email: q.get("email") || null,
+          name: q.get("name") || q.get("displayName") || null
+        };
+        if (ctx.email) {
+          ctx.email = String(ctx.email).trim();
+        }
+        if (window.SALES_ARCHETYPE_CONTEXT && typeof window.SALES_ARCHETYPE_CONTEXT === "object") {
+          var o = window.SALES_ARCHETYPE_CONTEXT;
+          if (o.userId) {
+            ctx.userId = o.userId;
+          }
+          if (o.email) {
+            ctx.email = String(o.email).trim();
+          }
+          if (o.name) {
+            ctx.name = o.name;
+          }
+        }
+        if (!ctx.email && sessionEmail) {
+          ctx.email = sessionEmail;
+        }
+        return ctx;
+      }
+
+      function shouldShowEmailField() {
+        if (getIntegrationContext().email) {
+          return false;
+        }
+        var cfg = getArchetypeConfig();
+        if (cfg.hideEmailField === true) {
+          return false;
+        }
+        if (cfg.requireEmail === true) {
+          return true;
+        }
+        if (cfg.showEmailField === true) {
+          return true;
+        }
+        if (cfg.showEmailField === false) {
+          return false;
+        }
+        var q = new URLSearchParams(window.location.search);
+        if (q.get("collectEmail") === "1" || q.get("seismic") === "1") {
+          return true;
+        }
+        return isEmbedded();
+      }
+
+      function persistEmailFromField() {
+        var input = el("field-email");
+        if (!input) {
+          return;
+        }
+        var raw = String(input.value || "").trim();
+        if (!raw) {
+          return;
+        }
+        try {
+          if (window.sessionStorage) {
+            window.sessionStorage.setItem(SESSION_EMAIL_KEY, raw);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      function isValidEmailInput() {
+        var input = el("field-email");
+        if (!input) {
+          return true;
+        }
+        return typeof input.checkValidity === "function" ? input.checkValidity() : /^\S+@\S+\.\S+/.test(String(input.value || "").trim());
+      }
+
+      function initEmailField() {
+        var wrap = el("field-email-wrap");
+        var input = el("field-email");
+        if (!wrap || !input) {
+          return;
+        }
+        if (shouldShowEmailField()) {
+          wrap.hidden = false;
+          if (!getIntegrationContext().email) {
+            try {
+              var s = window.sessionStorage && window.sessionStorage.getItem(SESSION_EMAIL_KEY);
+              if (s) {
+                input.value = s;
+              }
+            } catch (e) {
+              /* ignore */
+            }
+          } else {
+            input.value = getIntegrationContext().email || "";
+          }
+        } else {
+          wrap.hidden = true;
+        }
+      }
+
+      function emitSalesArchetypeResult(payload) {
+        var cfg = getArchetypeConfig();
+        var targetOrigin = cfg.postMessageTargetOrigin || "*";
+        var envelope = { type: "ogsc-sales-archetype-result", version: 1, payload: payload };
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(envelope, targetOrigin);
+          }
+        } catch (e1) {
+          /* Seismic or parent may block; safe to ignore */
+        }
+        try {
+          if (window.opener) {
+            window.opener.postMessage(envelope, targetOrigin);
+          }
+        } catch (e2) {
+          /* ignore */
+        }
+        try {
+          var ev = new CustomEvent("ogscSalesArchetypeResult", { detail: payload, bubbles: true, cancelable: false });
+          window.dispatchEvent(ev);
+          document.dispatchEvent(ev);
+        } catch (e3) {
+          /* ignore */
+        }
+        if (typeof window.onOgscSalesArchetypeResult === "function") {
+          try {
+            window.onOgscSalesArchetypeResult(payload);
+          } catch (e4) {
+            /* ignore */
+          }
+        }
+        var logUrl = typeof cfg.logEndpoint === "string" && cfg.logEndpoint;
+        if (logUrl) {
+          var body = JSON.stringify(payload);
+          var sent = false;
+          if (typeof navigator.sendBeacon === "function") {
+            try {
+              var blob = new Blob([body], { type: "application/json" });
+              sent = navigator.sendBeacon(logUrl, blob);
+            } catch (e5) {
+              sent = false;
+            }
+          }
+          if (!sent && typeof fetch === "function") {
+            try {
+              fetch(logUrl, {
+                method: "POST",
+                body: body,
+                headers: { "Content-Type": "application/json" },
+                mode: "cors",
+                keepalive: true
+              }).catch(function () {
+                /* ignore */
+              });
+            } catch (e6) {
+              /* ignore */
+            }
+          }
+        }
+      }
+
+      var questions = [
+        { q: "In sales, the work that energizes you more is…", a: { t: "Hunting: cold outbound, new logos, fresh pipeline", s: { H: 1 } }, b: { t: "Farming: growing accounts, renewals, and expansion", s: { F: 1 } } },
+        { q: "You would rather be measured mainly on…", a: { t: "New meetings, new opps, or new logos you open", s: { H: 1 } }, b: { t: "Retention, upsell, or expansion within a book of business", s: { F: 1 } } },
+        { q: "Your proudest win is usually…", a: { t: "A customer no one in the team had before", s: { H: 1 } }, b: { t: "Turning a good account into a much bigger one", s: { F: 1 } } },
+        { q: "“Greenfield” (no prior relationship) feels…", a: { t: "Like home — I like creating something from nothing", s: { H: 1 } }, b: { t: "Harder than working accounts that already trust us", s: { F: 1 } } },
+        { q: "On a great quarter, you are probably saying…", a: { t: "“I brought in a bunch of new names.”", s: { H: 1 } }, b: { t: "“I grew what we already had.”", s: { F: 1 } } },
+        { q: "If you had to pick one book of business, you would take…", a: { t: "A new territory with no accounts yet", s: { H: 1 } }, b: { t: "A set of current customers to grow and protect", s: { F: 1 } } },
+        { q: "Your natural closing rhythm is closer to…", a: { t: "Short, intense pushes — sprints, month-end, quick cycles", s: { S: 1 } }, b: { t: "Long runways — long nurture, multi-year or strategic deals", s: { M: 1 } } },
+        { q: "You do your best work when the cycle is…", a: { t: "Fast and high-tempo, with a clear finish line in sight", s: { S: 1 } }, b: { t: "Slow enough to build trust and compounding over time", s: { M: 1 } } },
+        { q: "A deal that drags for many quarters without a “done” often…", a: { t: "Drains you — you want resolution or a clean exit", s: { S: 1 } }, b: { t: "Feels normal in enterprise or complex sales", s: { M: 1 } } },
+        { q: "“Velocity” in your pipeline feels…", a: { t: "Like oxygen — I want deals moving and closing", s: { S: 1 } }, b: { t: "Secondary to doing the right long-term work", s: { M: 1 } } },
+        { q: "Revenue you respect most in a year is often…", a: { t: "A burst of wins in a compressed window", s: { S: 1 } }, b: { t: "Steady, repeatable growth built quarter over quarter", s: { M: 1 } } },
+        { q: "Your energy across the year is more like…", a: { t: "Peaks and sprints, then a short regroup, then the next push", s: { S: 1 } }, b: { t: "A marathon pace you can keep without burning out", s: { M: 1 } } },
+        { q: "In a customer call, you lean on…", a: { t: "Numbers, proof points, ROI, and crisp logic", s: { D: 1 } }, b: { t: "Relationship, story, social proof, and how people feel", s: { R: 1 } } },
+        { q: "You prepare a deck or talk track with…", a: { t: "Benchmarks, data cuts, and quantified value", s: { D: 1 } }, b: { t: "Stakeholder maps, human angles, and trust-building stories", s: { R: 1 } } },
+        { q: "A skeptical buyer is won over when you show…", a: { t: "Defensible analysis they can’t poke holes in", s: { D: 1 } }, b: { t: "That you understand their world and priorities", s: { R: 1 } } },
+        { q: "You read “the room” as…", a: { t: "The metrics, constraints, and decision criteria in writing", s: { D: 1 } }, b: { t: "The politics, rapport, and unspoken buy-in or risk", s: { R: 1 } } },
+        { q: "As a rep, you are prouder of being called…", a: { t: "Sharp on the facts and the business case", s: { D: 1 } }, b: { t: "Trusted, likable, and great with people", s: { R: 1 } } },
+        { q: "CRM hygiene for you is mainly about…", a: { t: "Stages, data quality, and forecast defensibility", s: { D: 1 } }, b: { t: "Who knows whom, next steps, and relationship notes", s: { R: 1 } } },
+        { q: "You do your best work when the org gives you…", a: { t: "Autonomy, loose guardrails, and you run your number alone", s: { L: 1 } }, b: { t: "Clear process, handoffs, and a machine around you", s: { P: 1 } } },
+        { q: "You would rather be known as…", a: { t: "A lone top performer who self-sources everything", s: { L: 1 } }, b: { t: "Someone who makes the system and team win", s: { P: 1 } } },
+        { q: "On deal strategy, you prefer…", a: { t: "Improvising and owning the path yourself", s: { L: 1 } }, b: { t: "Running the playbook and aligning the pod", s: { P: 1 } } },
+        { q: "You get energy from…", a: { t: "Minimal process meetings — go sell", s: { L: 1 } }, b: { t: "Structured syncs, MEDDIC, and shared accountability", s: { P: 1 } } },
+        { q: "A “bad” week at work is more often…", a: { t: "Too many internal meetings and not enough real selling", s: { L: 1 } }, b: { t: "Out of sync with process, or unclear on next steps and roles", s: { P: 1 } } },
+        { q: "The sale you hate most is the one where…", a: { t: "The team, rules, and layers slow you down for no value", s: { L: 1 } }, b: { t: "Roles are fuzzy and you cannot rely on the process", s: { P: 1 } } }
+      ];
+
+      var types = {
+        HSDL: { name: "The Maverick", coreVibe: "Closes massive deals, ignores the CRM, works in bursts.", energyBooster: "Double Espresso & Cold Pizza", peakProductivity: "9:00 PM - 12:00 AM", bestie: "The Gardener (FMRP)", kryptonite: "Weekly Status Meetings", officeDesk: "40 open tabs and a stacks of sticky notes", themeSong: "Power (Kanye West)", spiritAnimal: "The Raccoon (Scrappy & Resourceful)" },
+        HSDP: { name: "The Rainmaker", coreVibe: "High-energy closer who follows the playbook.", energyBooster: "Almonds & Espresso", peakProductivity: "10:00 AM - 1:00 PM", bestie: "The Analyst (FMDL)", kryptonite: "Manual Data Entry", officeDesk: "Dual monitors, ergonomic chair, zero clutter", themeSong: "All I Do Is Win (DJ Khaled)", spiritAnimal: "The Border Collie (Driven & Precise)" },
+        HSRL: { name: "The Charmer", coreVibe: "Relies on pure personality to win fast.", energyBooster: "Donuts & Iced Latte", peakProductivity: "3:00 PM - 6:00 PM", bestie: "The Architect (HMDL)", kryptonite: "Cold Reading Spreadsheets", officeDesk: "Polaroid photos and a fancy coffee machine", themeSong: "Uptown Funk (Bruno Mars)", spiritAnimal: "The Golden Retriever (Everyone's friend)" },
+        HSRP: { name: "The Evangelist", coreVibe: "Passionate closer building communities.", energyBooster: "Açai Bowl & Kombucha", peakProductivity: "11:00 AM - 2:00 PM", bestie: "The Caretaker (FSRP)", kryptonite: "Negative Feedback Loops", officeDesk: "Inspirational quotes and a ring light", themeSong: "Walking on Sunshine", spiritAnimal: "The Dolphin (Communicative & Social)" },
+        HMDL: { name: "The Architect", coreVibe: "Hunts big fish with long-term strategy.", energyBooster: "Dark Chocolate & Pour-over Coffee", peakProductivity: "8:00 AM - 11:00 AM", bestie: "The Charmer (HSRL)", kryptonite: "Changing Project Scopes", officeDesk: "Whiteboard full of diagrams and high-end tech", themeSong: "Eye of the Tiger", spiritAnimal: "The Owl (Calculating & Patient)" },
+        HMDP: { name: "The Closer", coreVibe: "Methodical, hunting-focused, unstoppable.", energyBooster: "Beef Jerky & Black Coffee", peakProductivity: "11:00 AM (Power Hour)", bestie: "The Confidant (FMRL)", kryptonite: "Vague 'Maybe' Responses", officeDesk: "A single notebook and an expensive watch", themeSong: "Lose Yourself (Eminem)", spiritAnimal: "The Falcon (Precision focus)" },
+        HMRL: { name: "The Counselor", coreVibe: "Builds deep trust over months.", energyBooster: "Earl Grey Tea & Shortbread", peakProductivity: "2:00 PM - 4:00 PM", bestie: "The Early Bird (FSDP)", kryptonite: "High-pressure 'Hard Sells'", officeDesk: "Warm lighting and a collection of client gifts", themeSong: "Lean on Me", spiritAnimal: "The Elephant (Never forgets a detail)" },
+        HMRP: { name: "The Diplomat", coreVibe: "Persistent relationship hunting with discipline.", energyBooster: "Green Apple & Sparkling Water", peakProductivity: "9:00 AM - 12:00 PM", bestie: "The Firefighter (FSDL)", kryptonite: "Disorganized CRM notes", officeDesk: "Color-coded filing and a clean desk mat", themeSong: "Smooth Operator", spiritAnimal: "The Swan (Calm surface, busy underwater)" },
+        FSDL: { name: "The Firefighter", coreVibe: "Legend at fixing churn in a crisis.", energyBooster: "Red Bull & Protein Bar", peakProductivity: "4:00 PM - 6:00 PM", bestie: "The Diplomat (HMRP)", kryptonite: "Slow-moving bureaucracy", officeDesk: "Cables everywhere but knows where everything is", themeSong: "Stayin' Alive", spiritAnimal: "The Jackrabbit (Fast & Alert)" },
+        FSDP: { name: "The Early Bird", coreVibe: "Knocks out renewals by 9:00 AM.", energyBooster: "Overnight Oats & Green Tea", peakProductivity: "7:00 AM - 10:00 AM", bestie: "The Counselor (HMRL)", kryptonite: "Late Afternoon Meetings", officeDesk: "A sunrise clock and a planners", themeSong: "Morning Has Broken", spiritAnimal: "The Rooster (Starts the day right)" },
+        FSRL: { name: "The Socialite", coreVibe: "Upsells clients at happy hour.", energyBooster: "Cheese Board & Seltzer", peakProductivity: "4:00 PM - 7:00 PM", bestie: "The Maverick (HSDL)", kryptonite: "Spreadsheet Audits", officeDesk: "Souvenirs and multiple charging cables", themeSong: "Celebration", spiritAnimal: "The Peacock (Flamboyant & Noticed)" },
+        FSRP: { name: "The Caretaker", coreVibe: "Loves the customer journey and empathy.", energyBooster: "Fruit Salad & Herbal Tea", peakProductivity: "10:00 AM - 1:00 PM", bestie: "The Evangelist (HSRP)", kryptonite: "Aggressive Sales Targets", officeDesk: "Lots of plants and a 'Thank You' card wall", themeSong: "You've Got a Friend", spiritAnimal: "The Panda (Gentle & Supportive)" },
+        FMDL: { name: "The Analyst", coreVibe: "Finds hidden upsells in old accounts.", energyBooster: "Greek Yogurt & Cold Brew", peakProductivity: "1:00 PM - 4:00 PM", bestie: "The Rainmaker (HSDP)", kryptonite: "Subjective Decision Making", officeDesk: "Three monitors and a mechanical keyboard", themeSong: "Harder, Better, Faster, Stronger", spiritAnimal: "The Beaver (Builds systems)" },
+        FMDP: { name: "The Farmer", coreVibe: "Reliable, steady growth from existing base.", energyBooster: "Trail Mix & Water", peakProductivity: "9:00 AM - 11:00 AM", bestie: "The Closer (HMDP)", kryptonite: "Cold Calling Strangers", officeDesk: "Organized folders and a desk calendar", themeSong: "Harvest Moon", spiritAnimal: "The Ant (Diligent & Community-focused)" },
+        FMRL: { name: "The Confidant", coreVibe: "The client's best friend; zero churn.", energyBooster: "Muffins & Latte", peakProductivity: "11:00 AM - 2:00 PM", bestie: "The Closer (HMDP)", kryptonite: "Price Increase Conversations", officeDesk: "Comfortable chair and photos of family/dogs", themeSong: "Bridge Over Troubled Water", spiritAnimal: "The Horse (Steady & Loyal)" },
+        FMRP: { name: "The Gardener", coreVibe: "Nurtures accounts with extreme discipline.", energyBooster: "Hummus & Veggies", peakProductivity: "8:30 AM - 11:30 AM", bestie: "The Maverick (HSDL)", kryptonite: "Chaos and Unpredictability", officeDesk: "Zen sand garden and a label maker", themeSong: "Lovely Day", spiritAnimal: "The Honeybee (Essential & Methodical)" }
+      };
+
+      const ARCHETYPE_IMAGE_PATH_BY_NAME = {
+        "The Analyst": "images/The Analyst.png",
+        "The Architect": "images/The Architect.png",
+        "The Caretaker": "images/The Caretaker.png",
+        "The Charmer": "images/The Charmer.png",
+        "The Closer": "images/The Closer.png",
+        "The Confidant": "images/The Confidant.png",
+        "The Counselor": "images/The Counselor.png",
+        "The Diplomat": "images/The Diplomat.png",
+        "The Early Bird": "images/The Early Bird.png",
+        "The Evangelist": "images/The Evangelist.png",
+        "The Farmer": "images/The Farmer.png",
+        "The Firefighter": "images/The Firefighter.png",
+        "The Gardener": "images/The Gardener.png",
+        "The Maverick": "images/The Maverick.png",
+        "The Rainmaker": "images/The Rainmaker.png",
+        "The Socialite": "images/The Socialite.png",
+        "The Counsellor": "images/The Counselor.png"
+      };
+
+      const ARCHETYPE_IMAGE_PATH_BY_CODE = {
+        FMDL: "images/The Analyst.png",
+        HMDL: "images/The Architect.png",
+        FSRP: "images/The Caretaker.png",
+        HSRL: "images/The Charmer.png",
+        HMDP: "images/The Closer.png",
+        FMRL: "images/The Confidant.png",
+        HMRL: "images/The Counselor.png",
+        HMRP: "images/The Diplomat.png",
+        FSDP: "images/The Early Bird.png",
+        HSRP: "images/The Evangelist.png",
+        FMDP: "images/The Farmer.png",
+        FSDL: "images/The Firefighter.png",
+        FMRP: "images/The Gardener.png",
+        HSDL: "images/The Maverick.png",
+        HSDP: "images/The Rainmaker.png",
+        FSRL: "images/The Socialite.png"
+      };
+
+      function localArchetypeImageUrl(relativePath) {
+        if (!relativePath) {
+          return null;
+        }
+        var n = relativePath.lastIndexOf("/");
+        if (n < 0) {
+          return encodeURIComponent(relativePath);
+        }
+        return (
+          relativePath.slice(0, n + 1) + encodeURIComponent(relativePath.slice(n + 1))
+        );
+      }
+
+      var current = 0;
+      var scores = { H: 0, F: 0, S: 0, M: 0, D: 0, R: 0, L: 0, P: 0 };
+
+      function el(id) {
+        return document.getElementById(id);
+      }
+
+      function setArchetypeImage(code, displayName) {
+        var img = el("result-mascot-img");
+        var fb = el("result-mascot-fallback");
+        var label = (displayName || code) + " — " + code;
+        var initial = (displayName && displayName.replace(/^The /i, "").charAt(0)) || code.charAt(0) || "?";
+
+        function showFallback() {
+          img.onload = null;
+          img.onerror = null;
+          img.removeAttribute("src");
+          img.referrerPolicy = "";
+          img.hidden = true;
+          img.alt = "";
+          fb.textContent = initial;
+          fb.hidden = false;
+        }
+
+        var nm = displayName && String(displayName).trim();
+        var relPath = (nm && ARCHETYPE_IMAGE_PATH_BY_NAME[nm]) || (code && ARCHETYPE_IMAGE_PATH_BY_CODE[code]) || null;
+        var url = localArchetypeImageUrl(relPath);
+        if (!url) {
+          showFallback();
+          return;
+        }
+
+        img.hidden = true;
+        fb.hidden = true;
+        img.onload = null;
+        img.onerror = null;
+        img.removeAttribute("src");
+        img.referrerPolicy = "";
+        img.onload = function () {
+          img.onerror = null;
+          img.hidden = false;
+          fb.hidden = true;
+          img.alt = label;
+        };
+        img.onerror = function () {
+          img.onload = null;
+          showFallback();
+        };
+        img.src = url;
+      }
+
+      function showScreen(id) {
+        var screens = document.querySelectorAll(".screen");
+        for (var i = 0; i < screens.length; i++) {
+          screens[i].classList.remove("active");
+        }
+        el(id).classList.add("active");
+      }
+
+      function applyScore(side) {
+        var q = questions[current];
+        var part = side === "a" ? q.a : q.b;
+        for (var k in part.s) {
+          if (Object.prototype.hasOwnProperty.call(part.s, k)) {
+            scores[k] += part.s[k];
+          }
+        }
+      }
+
+      function renderQuestion() {
+        var q = questions[current];
+        el("question-text").textContent = q.q;
+        el("opt-a").textContent = q.a.t;
+        el("opt-b").textContent = q.b.t;
+        var total = questions.length;
+        el("progress-count").textContent = String(current + 1) + " / " + String(total);
+        el("progress-fill").style.width = String(((current + 1) / total) * 100) + "%";
+      }
+
+      function letterPair(a, b) {
+        return scores[a] >= scores[b] ? a : b;
+      }
+
+      function timeToMinutes(token) {
+        if (!token) {
+          return null;
+        }
+        var m = String(token)
+          .trim()
+          .match(/(\d{1,2}):(\d{2})\s*(a\.?m\.?|p\.?m\.?)/i);
+        if (!m) {
+          return null;
+        }
+        var h = parseInt(m[1], 10);
+        var min = parseInt(m[2], 10);
+        var ap = m[3].toUpperCase().replace(/\./g, "");
+        if (ap === "PM" && h !== 12) {
+          h += 12;
+        }
+        if (ap === "AM" && h === 12) {
+          h = 0;
+        }
+        return h * 60 + min;
+      }
+
+      function parsePeakWindow(peakText) {
+        var t = peakText || "";
+        if (/power\s*hour/i.test(t)) {
+          var ph = t.match(/(\d{1,2}):(\d{2})\s*(a\.?m\.?|p\.?m\.?)/i);
+          if (ph) {
+            var s = timeToMinutes(ph[0]);
+            if (s !== null) {
+              return { start: s, end: s + 60 };
+            }
+          }
+        }
+        var parts = t.split(/\s*-\s*/);
+        if (parts.length >= 2) {
+          var a = timeToMinutes(parts[0]);
+          var b = timeToMinutes(parts[1]);
+          if (a !== null && b !== null) {
+            if (b <= a) {
+              b += 24 * 60;
+            }
+            return { start: a, end: b };
+          }
+        }
+        var one = t.match(/(\d{1,2}):(\d{2})\s*(a\.?m\.?|p\.?m\.?)/i);
+        if (one) {
+          var s0 = timeToMinutes(one[0]);
+          if (s0 !== null) {
+            return { start: s0, end: s0 + 60 };
+          }
+        }
+        return { start: 9 * 60, end: 17 * 60 };
+      }
+
+      function centerMinutes(start, end) {
+        return (start + end) / 2;
+      }
+
+      function isDayTime(centerM) {
+        var h = (centerM % (24 * 60)) / 60;
+        return h >= 6 && h < 18;
+      }
+
+      function peakBarMeta(peakText) {
+        var w = parsePeakWindow(peakText);
+        var day = 24 * 60;
+        var start = w.start;
+        var end = w.end;
+        var dur = Math.max(end - start, 1);
+        var icon;
+        if (isDayTime(centerMinutes(start, end))) {
+          icon = "☀️";
+        } else {
+          icon = "🌙";
+        }
+        if (end <= day) {
+          var leftP = (start / day) * 100;
+          var wP = Math.max((dur / day) * 100, 1.2);
+          if (leftP + wP > 100) {
+            wP = 100 - leftP;
+          }
+          return { icon: icon, segments: [{ left: leftP, width: wP }] };
+        }
+        var segs = [];
+        var s1w = ((day - start) / day) * 100;
+        segs.push({ left: (start / day) * 100, width: Math.max(s1w, 0.8) });
+        var rem = end - day;
+        if (rem > 0) {
+          segs.push({ left: 0, width: Math.max((rem / day) * 100, 0.8) });
+        }
+        return { icon: icon, segments: segs };
+      }
+
+      function showResult() {
+        var d1 = letterPair("H", "F");
+        var d2 = letterPair("S", "M");
+        var d3 = letterPair("D", "R");
+        var d4 = letterPair("L", "P");
+        var code = d1 + d2 + d3 + d4;
+        var info = types[code] || { name: "Your profile", d: "You sit near the middle on one or more pairs — the code still reflects your current lean. See How you scored below." };
+        var titleUpper = (info.name || "Profile").toUpperCase();
+        el("result-archetype-title").textContent = titleUpper;
+        el("result-type-paren").textContent = "(" + code + ")";
+
+        setArchetypeImage(code, info.name);
+
+        var mintGrid = el("result-mint-grid");
+        var fall = el("result-fallback");
+        mintGrid.innerHTML = "";
+        if (info.coreVibe) {
+          fall.hidden = true;
+          el("result-core-vibe").textContent = info.coreVibe;
+          el("result-spirit").textContent = info.spiritAnimal ? "Spirit Animal: " + info.spiritAnimal : "";
+
+          function addMintCard(labelHtml, valueText, isPeak) {
+            var card = document.createElement("div");
+            card.className = "mint-card" + (isPeak ? " mint-card--peak" : "");
+            var lb = document.createElement("p");
+            lb.className = "mint-card__label";
+            lb.innerHTML = labelHtml;
+            var val = document.createElement("p");
+            val.className = "mint-card__value";
+            val.textContent = valueText;
+            card.appendChild(lb);
+            card.appendChild(val);
+            if (isPeak) {
+              var pm = peakBarMeta(valueText);
+              var wrap = document.createElement("div");
+              wrap.className = "peak-bar-wrap";
+              var scale = document.createElement("div");
+              scale.className = "peak-day-scale";
+              var track = document.createElement("div");
+              track.className = "peak-day-track";
+              track.setAttribute("aria-hidden", "true");
+              scale.appendChild(track);
+              var j;
+              for (j = 0; j < pm.segments.length; j++) {
+                var seg = pm.segments[j];
+                var fill = document.createElement("div");
+                fill.className = "peak-day-fill";
+                fill.style.left = String(seg.left) + "%";
+                fill.style.width = String(seg.width) + "%";
+                scale.appendChild(fill);
+              }
+              var ic = document.createElement("span");
+              ic.className = "peak-emoji";
+              ic.textContent = pm.icon;
+              ic.setAttribute("aria-hidden", "true");
+              wrap.appendChild(scale);
+              wrap.appendChild(ic);
+              card.appendChild(wrap);
+            }
+            mintGrid.appendChild(card);
+          }
+
+          addMintCard("Energy Booster ⚡", info.energyBooster, false);
+          addMintCard("Your Bestie 👬", info.bestie, false);
+          addMintCard("Peak Productivity", info.peakProductivity, true);
+          addMintCard("Office Desk Aesthetic 💻", info.officeDesk, false);
+          addMintCard("Your Kryptonite 🚨", info.kryptonite, false);
+          addMintCard("Theme Song 🎵", info.themeSong, false);
+        } else {
+          el("result-core-vibe").textContent = "";
+          el("result-spirit").textContent = "";
+          fall.textContent = info.d || "";
+          fall.hidden = false;
+        }
+
+        var axes = el("result-axes");
+        axes.innerHTML = "";
+        function addAxisLight(label, left, right, lScore, rScore) {
+          var w = lScore > rScore ? left : (rScore > lScore ? right : lScore === rScore ? "Balanced" : right);
+          var countText = left + " " + lScore + " · " + right + " " + rScore;
+          var node = document.createElement("div");
+          node.className = "axis axis--light";
+          node.innerHTML =
+            label +
+            "<br><span class=\"winner\">" +
+            w +
+            "</span><span class=\"axis-count\">" +
+            countText +
+            "</span>";
+          axes.appendChild(node);
+        }
+        addAxisLight("Hunter / Farmer", "H", "F", scores.H, scores.F);
+        addAxisLight("Sprinter / Marathoner", "S", "M", scores.S, scores.M);
+        addAxisLight("Data / Relational", "D", "R", scores.D, scores.R);
+        addAxisLight("Lone Wolf / Process", "L", "P", scores.L, scores.P);
+
+        var integ = getIntegrationContext();
+        var trackPayload = {
+          version: 1,
+          event: "ogsc_weekly_4_sales_archetype",
+          sessionId: getOrCreateSessionId(),
+          completedAt: new Date().toISOString(),
+          challenge: "OGSC Weekly Challenge #4: The Sales Archetype Discovery",
+          typeCode: code,
+          archetype: info.name || null,
+          email: integ.email || null,
+          userId: integ.userId || null,
+          name: integ.name || null,
+          coreVibe: info.coreVibe || null,
+          spiritAnimal: info.spiritAnimal || null,
+          scores: { H: scores.H, F: scores.F, S: scores.S, M: scores.M, D: scores.D, R: scores.R, L: scores.L, P: scores.P },
+          leadingLetters: {
+            hunterFarmer: d1,
+            sprinterMarathon: d2,
+            dataRelational: d3,
+            loneWolfProcess: d4
+          },
+          context: integ
+        };
+        emitSalesArchetypeResult(trackPayload);
+
+        showScreen("screen-result");
+      }
+
+      function next(choice) {
+        applyScore(choice);
+        current += 1;
+        if (current >= questions.length) {
+          showResult();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      function reset() {
+        current = 0;
+        scores = { H: 0, F: 0, S: 0, M: 0, D: 0, R: 0, L: 0, P: 0 };
+        renderQuestion();
+        showScreen("screen-quiz");
+      }
+
+      el("btn-start").addEventListener("click", function () {
+        var err = el("field-email-error");
+        if (err) {
+          err.hidden = true;
+        }
+        var cfg = getArchetypeConfig();
+        var emailWrap = el("field-email-wrap");
+        if (emailWrap && !emailWrap.hidden) {
+          persistEmailFromField();
+        }
+        var integ = getIntegrationContext();
+        if (cfg.requireEmail === true && !integ.email) {
+          if (err) {
+            err.textContent = "Enter a valid work email to continue.";
+            err.hidden = false;
+          }
+          return;
+        }
+        var w = el("field-email-wrap");
+        if (w && !w.hidden) {
+          var v = el("field-email");
+          if (v && String(v.value || "").trim() !== "" && !isValidEmailInput()) {
+            if (err) {
+              err.textContent = "That email does not look valid.";
+              err.hidden = false;
+            }
+            return;
+          }
+        }
+        reset();
+      });
+
+      el("opt-a").addEventListener("click", function () {
+        next("a");
+      });
+
+      el("opt-b").addEventListener("click", function () {
+        next("b");
+      });
+
+      el("btn-again").addEventListener("click", function () {
+        showScreen("screen-start");
+        var err = el("field-email-error");
+        if (err) {
+          err.hidden = true;
+        }
+        initEmailField();
+      });
+
+      initEmailField();
+    })();
+  </script>
+</body>
+</html>
